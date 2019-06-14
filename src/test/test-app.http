@@ -1,4 +1,9 @@
 // Challenge
+GET http://localhost:8080/rhpds/test HTTP/1.1
+
+###
+
+// Challenge
 POST http://localhost:8080/rhpds/challenge HTTP/1.1
 content-type: application/json
 
