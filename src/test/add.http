@@ -1,0 +1,12 @@
+POST http://localhost:8080/rhpds/cluster HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample",
+    "version": "OCP3",
+    "owner": "Jorge",
+    "created": "2019-06-11T00:05:39.162",
+    "url": "http://example.com"
+}
+
+// 1560210816055

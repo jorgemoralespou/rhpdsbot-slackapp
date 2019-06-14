@@ -1,0 +1,17 @@
+package slack_rhpds;
+
+message Version {
+  required int32 version = 1;
+}
+
+message Cluster {
+  required string name = 1;
+  required Version version = 2;
+  required string owner = 3;
+  required string url = 4;
+  required string created = 5;
+}
+
+message ClusterSet {
+  repeated Cluster clusters = 1;
+}

@@ -1,0 +1,1 @@
+DELETE http://localhost:8080/rhpds/cluster/sample2 HTTP/1.1
