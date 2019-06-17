@@ -1,5 +1,7 @@
 package com.openshift.osevg.slack.rhpds;
 
+import java.net.InetAddress;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -209,7 +211,27 @@ public class RHPDSResource {
     }
 
     private Response verify(String params, String user, String channel){
-      return Response.status(200).entity(new SlackAppResponse(helpMessage)).build();
+      Pattern pattern = Pattern.compile(PATTERN_VERIFY);
+      Matcher matcher = pattern.matcher(params);
+      boolean isMatch = matcher.matches();
+      if (isMatch) {
+        String clusterName = matcher.group(1);
+        Cluster cl = service.get(channel, clusterName);
+        if (cl!=null && cl.getUrl()!=null){
+          try{
+            URI url = new URI(cl.getUrl());
+            InetAddress.getByName(url.getHost()).isReachable(2);
+          }catch(Exception e){
+            service.delete(channel, clusterName);
+            String errorMessage = "An error occurred while verifying the cluster. REMOVING IT!"; 
+            log.info(errorMessage + " " + e.getMessage());
+            return Response.status(200).entity(new SlackAppResponse(errorMessage)).build();
+          }
+          return Response.status(200).entity(new SlackAppResponse("Cluster is available")).build();
+        }
+        return Response.status(200).entity(new SlackAppResponse("No cluster available with that name: " + clusterName)).build();
+      }else
+        return Response.status(200).entity(new SlackAppResponse(helpMessage)).build();
     }
 
 }

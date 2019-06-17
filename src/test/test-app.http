@@ -1,5 +1,4 @@
-#@hostname = localhost:8080
-@hostname = rhpdsbot2-slackapp.b9ad.pro-us-east-1.openshiftapps.com
+@hostname = localhost:8080
 
 ###
 
@@ -52,7 +51,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 &user_id=U2147483697
 &user_name=Steve
 &command=/rhpds_envs
-&text=add%20%3Chttps%3A%2F%2Fmaster.kubecon-8743.openshiftworkshop.com%2Fconsole%3E
+&text=add%20%3Chttps%3A%2F%2Fmaster.osevg-ec5b.openshiftworkshop.com%2Fconsole%3E
 &response_url=https://hooks.slack.com/commands/1234/5678
 &trigger_id=13345224609.738474920.8088930838d88f008e0
 
@@ -128,6 +127,26 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 &user_id=U2147483697
 &user_name=Steve
 &command=/rhpds_envs
-&text=delete%20kubecon-8743
+&text=delete%20osevg-ec5b
+&response_url=https://hooks.slack.com/commands/1234/5678
+&trigger_id=13345224609.738474920.8088930838d88f008e0
+
+
+### 
+// Test verify
+POST http://{{hostname}}/rhpds HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+token=gIkuvaNzQIHg97ATvDxqgjtO
+&team_id=T0001
+&team_domain=example
+&enterprise_id=E0001
+&enterprise_name=Globular%20Construct%20Inc
+&channel_id=C2147483705
+&channel_name=test
+&user_id=U2147483697
+&user_name=Steve
+&command=/rhpds_envs
+&text=verify%20osevg-ec5b
 &response_url=https://hooks.slack.com/commands/1234/5678
 &trigger_id=13345224609.738474920.8088930838d88f008e0
