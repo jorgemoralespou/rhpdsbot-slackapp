@@ -11,7 +11,7 @@ import org.infinispan.protostream.MessageMarshaller;
 
 public class ClusterMarshaller implements MessageMarshaller<Cluster> {
 
-  private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+  private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
   @Override
   public Class<? extends Cluster> getJavaClass() {
     return Cluster.class;
@@ -27,8 +27,8 @@ public class ClusterMarshaller implements MessageMarshaller<Cluster> {
     String name = reader.readString("name");
     Version version = reader.readObject("version", Version.class);
     String owner = reader.readString("owner");
-    String createdStr = reader.readString("created");
     String url = reader.readString("url");
+    String createdStr = reader.readString("created");
     return new Cluster(name, version, owner, LocalDateTime.parse(createdStr, formatter), url);
   }
 
@@ -37,8 +37,8 @@ public class ClusterMarshaller implements MessageMarshaller<Cluster> {
     writer.writeString("name", cluster.getName());
     writer.writeObject("version", cluster.getVersion(), Version.class);
     writer.writeString("owner", cluster.getOwner());
-    writer.writeString("created", cluster.getCreated().format(formatter));
     writer.writeString("url", cluster.getUrl());
+    writer.writeString("created", cluster.getCreated().format(formatter));
   }
 
 }

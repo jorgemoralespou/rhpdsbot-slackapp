@@ -2,6 +2,7 @@ package com.openshift.osevg.slack.rhpds;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Cluster implements PrettyPrinter, Serializable{
 
@@ -93,13 +94,25 @@ public class Cluster implements PrettyPrinter, Serializable{
         .append(" [")
         .append(version)
         .append("] ")
-        .append(" at ").append(url)
+        .append("at ").append(url)
         .append(" ")
-        .append("created on").append(created)
+        .append("created on ").append(created)
         .append(" ")
         .append("by ").append(owner)
         .append("");
     return buf.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Cluster cluster = (Cluster) o;
+    return Objects.equals(name, cluster.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
 }

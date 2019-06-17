@@ -3,6 +3,7 @@ package com.openshift.osevg.slack.rhpds;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class ClusterSet implements PrettyPrinter, Serializable{
@@ -75,4 +76,16 @@ public class ClusterSet implements PrettyPrinter, Serializable{
     return buf.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ClusterSet that = (ClusterSet) o;
+    return Objects.equals(clusters, that.clusters);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(clusters);
+  }
 }

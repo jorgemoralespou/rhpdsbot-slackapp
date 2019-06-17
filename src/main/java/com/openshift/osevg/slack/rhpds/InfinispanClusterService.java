@@ -1,19 +1,11 @@
 package com.openshift.osevg.slack.rhpds;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.openshift.osevg.slack.rhpds.protobuf.ClusterMarshaller;
-import com.openshift.osevg.slack.rhpds.protobuf.ClusterSetMarshaller;
-import com.openshift.osevg.slack.rhpds.protobuf.VersionMarshaller;
-
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.protostream.BaseMarshaller;
-import org.infinispan.protostream.MessageMarshaller;
 
 import io.quarkus.infinispan.client.runtime.Remote;
 
@@ -24,17 +16,9 @@ public class InfinispanClusterService implements ClusterService {
   @Inject
   RemoteCacheManager remoteCacheManager;
 
-//  @Inject InfinispanClusterService(RemoteCacheManager remoteCacheManager) {
-//    this.remoteCacheManager = remoteCacheManager;
-//  }
-
   @Inject @Remote("default")
   RemoteCache<String, ClusterSet> cache;
 
-//  void onStart(@Observes StartupEvent ev) {
-    //LOGGER.info("Create or get cache named mycache with the default configuration");
-//    cache = remoteCacheManager.administration().getOrCreateCache("mycache", "default");
-// }
   @Override
   public ClusterSet list(String clustersKey) {
     if (cache.containsKey(clustersKey)){
@@ -64,13 +48,14 @@ public class InfinispanClusterService implements ClusterService {
 
   @Override
   public void add(String clustersKey, Cluster cluster) {
+    ClusterSet myClusters;
     if (cache.containsKey(clustersKey)){
-      cache.get(clustersKey).add(cluster);
-    }else{
-      ClusterSet myClusters = new ClusterSet();
-      myClusters.add(cluster);
-      cache.put(clustersKey, myClusters);
+      myClusters = cache.get(clustersKey);
+    }else {
+      myClusters = new ClusterSet();
     }
+    myClusters.add(cluster);
+    cache.put(clustersKey, myClusters);
   }
 
   @Override
@@ -81,32 +66,18 @@ public class InfinispanClusterService implements ClusterService {
   @Override
   public void delete(String clustersKey, Cluster cluster) {
     if (cache.containsKey(clustersKey)){
-      cache.get(clustersKey).getAll().remove(cluster);
+      ClusterSet clusters = cache.get(clustersKey);
+      clusters.delete(cluster);
+      cache.put(clustersKey, clusters);
     }
   }
 
   @Override
   public Cluster get(String clustersKey, String name) {
-    if (cache.containsKey(clustersKey)){
+    if (cache.containsKey(clustersKey)) {
       return cache.get(clustersKey).get(name);
-    }else{
+    } else {
       return null;
     }
   }
-
-  @Produces
-  BaseMarshaller<Cluster> clusterMarshaller() {
-     return new ClusterMarshaller();
-  }
-
-  @Produces
-  BaseMarshaller<ClusterSet> clusterSetMarshaller() {
-     return new ClusterSetMarshaller();
-  }
-
-  @Produces
-  BaseMarshaller<Version> versionMarshaller() {
-     return new VersionMarshaller();
-  }
-
 }

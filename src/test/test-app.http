@@ -1,10 +1,15 @@
-// Challenge
-GET http://localhost:8080/rhpds/test HTTP/1.1
+#@hostname = localhost:8080
+@hostname = rhpdsbot2-slackapp.b9ad.pro-us-east-1.openshiftapps.com
 
 ###
 
 // Challenge
-POST http://localhost:8080/rhpds/challenge HTTP/1.1
+GET http://{{hostname}}/rhpds/test HTTP/1.1
+
+###
+
+// Challenge
+POST http://{{hostname}}/rhpds/challenge HTTP/1.1
 content-type: application/json
 
 {
@@ -15,7 +20,7 @@ content-type: application/json
 
 ###
 // Test help
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -34,7 +39,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 
 ###
 // Test add with OCP3 URL
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -53,7 +58,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 
 ###
 // Test add with OCP4 URL
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -72,7 +77,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 
 ### 
 // Test add with unknown
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -91,7 +96,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 
 ### 
 // Test list
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -110,7 +115,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 
 ### 
 // Test delete
-POST http://localhost:8080/rhpds HTTP/1.1
+POST http://{{hostname}}/rhpds HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 token=gIkuvaNzQIHg97ATvDxqgjtO
@@ -123,6 +128,6 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 &user_id=U2147483697
 &user_name=Steve
 &command=/rhpds_envs
-&text=delete%20cluster-3730
+&text=delete%20kubecon-8743
 &response_url=https://hooks.slack.com/commands/1234/5678
 &trigger_id=13345224609.738474920.8088930838d88f008e0
