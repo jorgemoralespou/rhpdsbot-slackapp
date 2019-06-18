@@ -6,17 +6,45 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+
+@Entity
+@NamedQuery(name = "ClusterSet.findByName",
+            query = "SELECT c FROM ClusterSet c WHERE c.name=:name")
 public class ClusterSet implements PrettyPrinter, Serializable{
 
-  private static final long serialVersionUID = 289818268456768894L;
+    private static final long serialVersionUID = 289818268456768894L;
+
+    private static final String DEFAULT = "default";
   
-  private Set<Cluster> clusters;
+    @Id
+    @Column(name="name")
+    private String name;
+
+    @OneToMany
+    private Set<Cluster> clusters;
 
     public ClusterSet(){
+      name = DEFAULT;
       clusters = new HashSet<Cluster>();
     }
 
     public ClusterSet(Set<Cluster> set){
+      name = DEFAULT;
+      clusters = set;
+    }
+
+    public ClusterSet(String name){
+      this.name = name;
+      clusters = new HashSet<Cluster>();
+    }
+
+    public ClusterSet(String name, Set<Cluster> set){
+      this.name = name;
       clusters = set;
     }
 

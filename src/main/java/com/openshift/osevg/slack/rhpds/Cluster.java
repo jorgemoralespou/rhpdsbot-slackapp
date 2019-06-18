@@ -4,18 +4,29 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Cluster implements PrettyPrinter, Serializable{
 
   private static final long serialVersionUID = 9059576234681297697L;
 
+  @Id
+  @Column(name="name")
   private String name;
 
+  @Column(name="version")
   private Version version;
 
+  @Column(name="owner")
   private String owner;
 
+  @Column(name="created")
   private LocalDateTime created;
 
+  @Column(name="url")
   private String url;
 
   public Cluster() {

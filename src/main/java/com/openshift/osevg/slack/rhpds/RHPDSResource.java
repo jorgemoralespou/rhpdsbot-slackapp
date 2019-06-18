@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import com.openshift.osevg.slack.rhpds.Version;
 import com.openshift.osevg.slack.rhpds.slack.SlackAppResponse;
+import com.openshift.osevg.slack.rhpds.slack.SlackAppResponseType;
 import com.openshift.osevg.slack.rhpds.slack.SlackChallenge;
 
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class RHPDSResource {
                                  "Type: '/rhpds_envs help list' to learn how to list all available clusters\n" + 
                                  "Type: '/rhpds_envs help verify' to learn how to verify the status of a cluster\n";
 
-    @Inject @Named("Infinispan")
+    @Inject @Named("Database")
     ClusterService service;
 /*
     @GET
@@ -88,12 +89,13 @@ public class RHPDSResource {
     private static final String PATTERN_COMMAND = "^(?:\\s*)(list|add|delete|verify|help)\\b\\s?(.*)";
     private static final String PATTERN_ADD = "^(?:\\s*)<(.*)>";
     private static final String PATTERN_DELETE = "^(?:\\s*)(.*)\\b";
-    private static final String PATTERN_LIST = "^(?:\\s*)(.*)\\b";
     private static final String PATTERN_VERIFY = "^(?:\\s*)(.*)\\b";
     private static final String PATTERN_HELP = "^(?:\\s*)(list|add|delete|verify)\\b(.*)";
 
-    private static final String PATTERN_OCP3_RHPDS = "(https://master\\.(.*)\\.openshiftworkshop\\.com).*";
-    private static final String PATTERN_OCP4_RHPDS = "(https://console-openshift-console\\.apps\\.(.*)\\.(?:.*)\\.openshiftworkshop\\.com).*";
+    private static final String PATTERN_OCP3_RHPDS = "(https?://master\\.(.*)\\.openshiftworkshop\\.com).*";
+    private static final String PATTERN_OCP4_RHPDS = "(https?://console-openshift-console\\.apps\\.(.*)\\.(?:.*)\\.openshiftworkshop\\.com).*";
+
+    private static final Pattern pattern_command = Pattern.compile(PATTERN_COMMAND);
 
     @POST
     @Produces({MediaType.APPLICATION_JSON})
@@ -122,8 +124,7 @@ public class RHPDSResource {
         log.info("-------");
         //   /rhpds_envs [add|delete|list|verify]
         // Parse first token in the cluster
-        Pattern pattern = Pattern.compile(PATTERN_COMMAND);
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher = pattern_command.matcher(text);
         boolean isMatch = matcher.matches();
         if (isMatch){
           if(matcher.group(1).equals("add")){
@@ -140,10 +141,11 @@ public class RHPDSResource {
         }
     }
 
+    private static final Pattern pattern_help = Pattern.compile(PATTERN_HELP);
+    
     private Response help(String params, String user, String channel){
       // Provide per command help
-      Pattern pattern = Pattern.compile(PATTERN_HELP);
-      Matcher matcher = pattern.matcher(params);
+      Matcher matcher = pattern_help.matcher(params);
       boolean isMatch = matcher.matches();
       String message = helpMessage;
       if (isMatch){
@@ -160,10 +162,12 @@ public class RHPDSResource {
       return Response.status(200).entity(new SlackAppResponse(message)).build();
     }
 
+    private static final Pattern pattern_add = Pattern.compile(PATTERN_ADD);
+    
     private Response add(String params, String user, String channel){
       System.out.println("Adding [" + params + "] by user [" + user + "] in channel ["+channel+"]");
-      Pattern pattern = Pattern.compile(PATTERN_ADD);
-      Matcher matcher = pattern.matcher(params);
+      
+      Matcher matcher = pattern_add.matcher(params);
       boolean isMatch = matcher.matches();
       if (isMatch){
         String givenURL = matcher.group(1);
@@ -189,18 +193,19 @@ public class RHPDSResource {
         }
         myCluster.setOwner(user);
         service.add(channel, myCluster);
-        return Response.status(200).entity(new SlackAppResponse(myCluster.toPrettyString())).build();
+        return Response.status(200).entity(new SlackAppResponse(myCluster.toPrettyString(), SlackAppResponseType.in_channel)).build();
       }
       return Response.status(200).entity(new SlackAppResponse("/rhpds_envs add <cluster_url>")).build();
     }
 
+    private static final Pattern pattern_delete = Pattern.compile(PATTERN_DELETE);
     private Response delete(String params, String user, String channel){
-      Pattern pattern = Pattern.compile(PATTERN_DELETE);
-      Matcher matcher = pattern.matcher(params);
+      Matcher matcher = pattern_delete.matcher(params);
       boolean isMatch = matcher.matches();
       if (isMatch) {
-        service.delete(channel, matcher.group(1));
-        return Response.status(200).entity(new SlackAppResponse("Cluster deleted")).build();
+        String clusterName = matcher.group(1);
+        service.delete(channel, clusterName);
+        return Response.status(200).entity(new SlackAppResponse("Cluster " + clusterName + " deleted", SlackAppResponseType.in_channel)).build();
       }else
         return Response.status(200).entity(new SlackAppResponse(helpMessage)).build();
     }
@@ -210,9 +215,10 @@ public class RHPDSResource {
       return Response.status(200).entity(new SlackAppResponse(myList==null? "There's no clusters" : myList.toPrettyString())).build();
     }
 
+    private static final Pattern pattern_verify = Pattern.compile(PATTERN_VERIFY);
+      
     private Response verify(String params, String user, String channel){
-      Pattern pattern = Pattern.compile(PATTERN_VERIFY);
-      Matcher matcher = pattern.matcher(params);
+      Matcher matcher = pattern_verify.matcher(params);
       boolean isMatch = matcher.matches();
       if (isMatch) {
         String clusterName = matcher.group(1);
@@ -223,9 +229,9 @@ public class RHPDSResource {
             InetAddress.getByName(url.getHost()).isReachable(2);
           }catch(Exception e){
             service.delete(channel, clusterName);
-            String errorMessage = "An error occurred while verifying the cluster. REMOVING IT!"; 
+            String errorMessage = "Cluster " + clusterName + " no longer available. REMOVING IT!"; 
             log.info(errorMessage + " " + e.getMessage());
-            return Response.status(200).entity(new SlackAppResponse(errorMessage)).build();
+            return Response.status(200).entity(new SlackAppResponse(errorMessage, SlackAppResponseType.in_channel)).build();
           }
           return Response.status(200).entity(new SlackAppResponse("Cluster is available")).build();
         }

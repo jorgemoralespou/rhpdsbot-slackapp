@@ -70,7 +70,7 @@ token=gIkuvaNzQIHg97ATvDxqgjtO
 &user_id=U2147483697
 &user_name=Steve
 &command=/rhpds_envs
-&text=add%20%3Chttps%3A%2F%2Fconsole-openshift-console.apps.cluster-3730.3730.openshiftworkshop.com%2Fconsole%3E
+&text=add%20%3Chttp%3A%2F%2Fconsole-openshift-console.apps.cluster-3730.3730.openshiftworkshop.com%2Fconsole%3E
 &response_url=https://hooks.slack.com/commands/1234/5678
 &trigger_id=13345224609.738474920.8088930838d88f008e0
 
