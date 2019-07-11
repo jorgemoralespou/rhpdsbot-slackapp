@@ -25,6 +25,8 @@ import com.openshift.osevg.slack.rhpds.slack.SlackChallenge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.quarkus.scheduler.Scheduled;
+
 @Path("/rhpds")
 public class RHPDSResource {
 
@@ -36,7 +38,7 @@ public class RHPDSResource {
                                  "Type: '/rhpds_envs help list' to learn how to list all available clusters\n" + 
                                  "Type: '/rhpds_envs help verify' to learn how to verify the status of a cluster\n";
 
-    @Inject @Named("Database")
+    @Inject
     ClusterService service;
 /*
     @GET
@@ -240,4 +242,25 @@ public class RHPDSResource {
         return Response.status(200).entity(new SlackAppResponse(helpMessage)).build();
     }
 
+/*
+    @Scheduled(every="10s")
+    private void scheduledVerify(){
+      service.getAll().forEach(cluster -> {
+        if (!verify(cluster.getUrl())){
+          // TODO: How can I get the clusterKey?
+          service.delete("clustersKey", cluster);
+        }
+      });
+    }
+
+    private boolean verify(String clusterUrl){
+      try{
+        URI url = new URI(clusterUrl);
+        InetAddress.getByName(url.getHost()).isReachable(2);
+      }catch(Exception e){
+        return false;
+      }
+      return true;
+    }
+*/
 }
