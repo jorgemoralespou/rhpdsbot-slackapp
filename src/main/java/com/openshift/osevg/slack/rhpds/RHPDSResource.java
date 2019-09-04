@@ -38,7 +38,7 @@ public class RHPDSResource {
                                  "Type: '/rhpds_envs help list' to learn how to list all available clusters\n" + 
                                  "Type: '/rhpds_envs help verify' to learn how to verify the status of a cluster\n";
 
-    @Inject
+    @Inject @Named("Database")
     ClusterService service;
 /*
     @GET
@@ -94,8 +94,8 @@ public class RHPDSResource {
     private static final String PATTERN_VERIFY = "^(?:\\s*)(.*)\\b";
     private static final String PATTERN_HELP = "^(?:\\s*)(list|add|delete|verify)\\b(.*)";
 
-    private static final String PATTERN_OCP3_RHPDS = "(https?://master\\.(.*)\\.openshiftworkshop\\.com).*";
-    private static final String PATTERN_OCP4_RHPDS = "(https?://console-openshift-console\\.apps\\.(.*)\\.(?:.*)\\.openshiftworkshop\\.com).*";
+    private static final String PATTERN_OCP3_RHPDS = "(https?://master\\.(.*)\\.open\\.redhat\\.com).*";
+    private static final String PATTERN_OCP4_RHPDS = "(https?://console-openshift-console\\.apps\\.(.*)\\.(?:.*)\\.open\\.redhat\\.com).*";
 
     private static final Pattern pattern_command = Pattern.compile(PATTERN_COMMAND);
 
